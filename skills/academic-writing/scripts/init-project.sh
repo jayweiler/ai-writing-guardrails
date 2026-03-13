@@ -116,7 +116,7 @@ echo ""
 
 if [ -f "$PROJECT_DIR/project-config.yaml" ]; then
     sed_inplace "s/^project_name: \"\"/project_name: \"$PROJECT_NAME\"/" "$PROJECT_DIR/project-config.yaml"
-    sed_inplace "s|^working_directory: \"\"|working_directory: \"$PROJECT_DIR\"|" "$PROJECT_DIR/project-config.yaml"
+    sed_inplace "s|^working_directory: \"\"|working_directory: \".\"|" "$PROJECT_DIR/project-config.yaml"
 fi
 
 # --- Auto-detect platform and set recommended defaults ---
