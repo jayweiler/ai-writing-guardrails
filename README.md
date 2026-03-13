@@ -11,16 +11,14 @@ A process enforcement skill for responsible AI-assisted academic writing. Design
 
 **2. Initialize a project:**
 ```bash
-# Find the skill (plugin install puts it in ~/.claude/plugins/)
-~/.claude/plugins/academic-writing/skills/academic-writing/scripts/init-project.sh \
+# Find the skill (plugin install puts it in ~/.claude/plugins/<repo-name>/)
+~/.claude/plugins/academic-writing-skill/skills/academic-writing/scripts/init-project.sh \
   ~/my-paper "My Paper Title" --outline ~/my-paper/outline.md
 ```
 
-**3. Fill in the 3 required fields** in `my-paper/project-config.yaml`:
+**3. Add your name** to `my-paper/project-config.yaml`:
 ```yaml
-project_name: "My Paper Title"
-author: "Your Name"
-working_directory: "."
+author: "Your Name"     # only field you need to fill in — init handles the rest
 ```
 
 **4. Start writing:**
@@ -110,7 +108,7 @@ Once installed, scaffold a new paper project using the init script:
 
 ```bash
 # Find the skill location (depends on install method)
-# Plugin install: ~/.claude/plugins/academic-writing/skills/academic-writing/
+# Plugin install: ~/.claude/plugins/academic-writing-skill/skills/academic-writing/
 # Manual install: wherever you cloned/linked it
 
 # Basic setup
@@ -153,6 +151,17 @@ The skill supports multiple concurrent paper projects. Each project is a separat
 When you start a session, the skill scans your workspace for `project-config.yaml` files. If it finds one project, it loads automatically. If it finds multiple, it presents a list and asks which one you want to work on. If the skill can tell from context which project you mean (e.g., "let's work on the SFSU paper" when one project is named "Bias in AI Safety Measures"), it'll load that one directly.
 
 Once a project is selected for a session, the skill stays on it unless you say otherwise.
+
+### Returning to a project
+
+One of the skill's key strengths is continuity across sessions. When you come back days or weeks later:
+
+1. The skill loads your section status and tells you where you left off
+2. It reads your decision log for open questions or recent editorial choices
+3. It loads the current section's state file — which has reference notes, draft status, and open gaps from previous sessions
+4. It asks you to confirm before continuing: "We were working on Section 3 in the drafting phase. Pick up here, or work on something else?"
+
+All of this survives between sessions because the skill writes everything to files on disk — not just the AI's memory. Even if you switch between Cowork and Claude Code, or use a different computer, the project state follows you as long as the project directory is accessible.
 
 ### What a typical session looks like
 
@@ -198,7 +207,7 @@ After running `init-project.sh`, your paper directory looks like this:
 
 ```
 your-paper/
-├── project-config.yaml       ← Project settings (edit this first — 3 required fields)
+├── project-config.yaml       ← Project settings (add your name — init fills the rest)
 ├── outline.md                 ← Paper outline (placeholder, or copied from --outline)
 ├── section-status.md          ← Section progress tracker (auto-populated from outline)
 ├── style-guide.md             ← Writing voice/preferences (starts empty, grows over time)

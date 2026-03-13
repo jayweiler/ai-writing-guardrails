@@ -24,7 +24,7 @@ Each writing session focuses on one section. Load only what's needed:
 - That section's outline entry
 - Its triaged references and per-reference notes
 - The project style guide
-- The interaction patterns (this skill's rules)
+- The skill's process rules (SKILL.md)
 - The section's state file
 
 **Do NOT load** unless specifically needed:
@@ -68,7 +68,7 @@ Before any step that will burn heavy context:
 
 Save a section checkpoint first. Write the current state of everything to the section state file. If compression happens mid-step, we have a clean restore point from before the lossy work.
 
-**Trigger:** If you estimate that the next piece of work will consume more than ~30% of remaining context, save state first.
+**Trigger:** If you estimate that the next piece of work will consume more than the project's `context_checkpoint_threshold` percentage (default: 30%) of remaining context, save state first. Check `project-config.yaml` for the configured value.
 
 ## Strategy 5: Cross-Section Flow as Separate Phase
 

@@ -5,5 +5,8 @@
   "author": {
     "name": "Jay Weiler"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "skills": [
+    "skills/academic-writing"
+  ]
 }

@@ -192,7 +192,7 @@ Long writing sessions will often trigger context window compaction (the AI's con
 
 Do NOT silently continue writing after compaction. The risk is that guardrails, editorial agreements, and voice calibration are lost, and the output drifts without the author noticing.
 
-See `references/context-engineering.md` for the full context management strategy.
+**Proactive save:** Before work that might push context toward compaction, save a section checkpoint. The project config's `context_checkpoint_threshold` field (default: 30) sets the percentage of remaining context that triggers a checkpoint save. See `references/context-engineering.md` for the full context management strategy.
 
 ---
 

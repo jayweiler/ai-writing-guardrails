@@ -186,13 +186,6 @@ generate_section_states() {
 
     # Update section-status.md with actual sections
     if [ -f "$status_file" ] && [ -n "$status_entries" ]; then
-        # Replace the placeholder table rows
-        local placeholder="| 0 | Introduction | not-started | | |
-| 1 | \[Section Name\] | not-started | | |
-| 2 | \[Section Name\] | not-started | | |
-| 3 | \[Section Name\] | not-started | | |
-| 4 | Conclusion | not-started | | |"
-
         # Write new status file with actual sections
         cat > "$status_file" << STATUSEOF
 # Section Status
