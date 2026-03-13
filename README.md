@@ -57,25 +57,52 @@ Honest assessment — these mitigations are not all equally strong.
 
 Nothing in this skill can fully compensate for biases in the AI's training data. The representation audit can flag *absences* in your reference list, but it can't suggest sources the AI doesn't know about. Counter-searches help, but the AI searches with the same biased training data. The skill's honest response to this is transparency: the genai-disclosure template puts the limitation on the record, the process journal documents where the AI's suggestions were and weren't sufficient, and the decision log captures where the author overrode the AI's framing.
 
+### Why the decision log matters
+
+The decision log is arguably the most important artifact the skill produces. Every editorial choice — framing decisions, reference inclusion/exclusion, argument structure, guardrail overrides — gets recorded with what was decided, what alternatives were considered, who drove the decision (author or AI), and why. This serves multiple purposes: it prevents relitigating settled decisions when context windows reset between sessions, it provides raw material for the genai-disclosure statement, and it creates an auditable record that editorial judgment remained with the author throughout. Combined with session history tracking in each section's state file (which logs what happened in every work session, phase by phase), the decision log means no part of the writing process is a black box. If a reviewer asks "how did you arrive at this framing?" or "why did you exclude that perspective?", the answer is in the log — not reconstructed after the fact.
+
 This is by design. A tool that claimed to eliminate AI bias in academic writing would be dishonest. A tool that makes AI bias visible, creates checkpoints for human judgment, and maintains a transparent record of the collaboration — that's a credible contribution.
 
 ## Installation
 
-### Claude Code / Cowork
-
-Copy or clone this repository into your skills directory:
+Clone the repo somewhere on your machine, then link or copy it into the appropriate skills directory.
 
 ```bash
-# Clone to your skills folder
-git clone https://github.com/YOUR_USERNAME/academic-writing-skill.git \
-  ~/.claude/skills/academic-writing
+git clone https://github.com/jayweiler/academic-writing-skill.git \
+  ~/path/to/your/working/copy
+```
 
-# Or for a specific project
-git clone https://github.com/YOUR_USERNAME/academic-writing-skill.git \
-  /path/to/your/project/.skills/academic-writing
+### Cowork (Claude Desktop)
+
+Skills live in `~/Documents/Claude/.skills/skills/`. Symlink is recommended if you plan to develop or update the skill:
+
+```bash
+mkdir -p ~/Documents/Claude/.skills/skills
+ln -s ~/path/to/your/working/copy ~/Documents/Claude/.skills/skills/academic-writing
+```
+
+The skill will appear in the available skills list on your next session.
+
+### Claude Code
+
+Skills live in `~/.claude/skills/`:
+
+```bash
+mkdir -p ~/.claude/skills
+ln -s ~/path/to/your/working/copy ~/.claude/skills/academic-writing
+```
+
+### Project-Local Installation
+
+You can also install the skill into a specific project's `.skills/` directory:
+
+```bash
+ln -s ~/path/to/your/working/copy /path/to/your/project/.skills/academic-writing
 ```
 
 ### Initialize a New Paper Project
+
+Once installed, scaffold a new paper project:
 
 ```bash
 # Basic setup
@@ -86,6 +113,101 @@ git clone https://github.com/YOUR_USERNAME/academic-writing-skill.git \
 ```
 
 The `--outline` flag parses `## Heading` lines from your outline file and generates per-section state files and a section status tracker automatically.
+
+## Examples
+
+### Outline format
+
+The `--outline` flag expects `## Heading` lines for top-level sections. Deeper headings (`###`, `####`) are ignored — only `##` lines become tracked sections.
+
+```markdown
+## Introduction
+Background on the problem and why it matters.
+
+## Literature Review
+### Historical Context
+### Current Approaches
+Summary of existing work in the field.
+
+## Methodology
+How the analysis was conducted.
+
+## Results
+What was found.
+
+## Discussion
+What it means and where it falls short.
+
+## Conclusion
+```
+
+This would generate 6 section state files (`introduction.md` through `conclusion.md`) and a section status tracker. The subsections under Literature Review are part of that section's content, not separate tracked sections.
+
+### What init generates
+
+After running `init-project.sh`, your paper directory gets this structure:
+
+```
+your-paper/
+  project-config.yaml       # Author, institution, skill settings, file paths
+  section-status.md         # All sections with phase tracking (auto-populated from outline)
+  state/
+    introduction.md         # Per-section state: refs, drafting decisions, gaps, session history
+    literature-review.md
+    methodology.md
+    ...
+  process/
+    decision-log.md         # Editorial decision log (see below)
+    process-journal.md      # Process documentation for genai disclosure
+    genai-disclosure.md     # AI use disclosure statement template
+```
+
+If any of these files already exist (e.g., you have an existing decision log), init won't overwrite them.
+
+### Decision log entries
+
+The decision log is a chronological record of editorial choices. Each entry captures the decision, alternatives considered, who drove it, and reasoning. Here's what real entries look like:
+
+```markdown
+## Mar 11, 2026 — Section 1: Defining Bias
+
+### Framing — Lead with values monoculture, not technical definition
+- **Decision:** Section opens with who builds AI and who defines "safe,"
+  then flows into linguistic bias and identity suppression.
+- **Alternatives:** Claude initially proposed leading with a technical
+  taxonomy of bias types. Author reordered.
+- **Reasoning:** Values monoculture is the structural argument that
+  explains *why* the specific failures happen. Technical taxonomy is
+  descriptive; this is causal.
+- **Who drove it:** Author directed the reorder; AI restructured.
+
+### Guardrail override — Skipped representation audit for Section 1
+- **Decision:** [guardrail-override] Proceeded to drafting without
+  completing the representation audit for this section's references.
+- **Reasoning:** Section 1 is definitional/introductory — the primary
+  references are well-established frameworks (Buolamwini, Noble, Benjamin),
+  not empirical work where representation gaps would be most harmful.
+  Full audit will be done for Sections 2-4.
+- **Who drove it:** Author decision, logged per skill protocol.
+```
+
+Every guardrail override is tagged `[guardrail-override]` so overrides are searchable across the full log. The principle: an override with documented reasoning is better than a guardrail quietly ignored.
+
+### Section state files
+
+Each section gets a persistent state file that tracks references (tiered as Foundational / Supporting / Contextual with verification status), a representation audit checklist, drafting decisions, open gaps, and a session history table. The session history is particularly important for continuity — it logs what happened in each work session so context isn't lost when the AI's context window resets:
+
+```markdown
+## Session History
+
+| Date       | Phase          | What happened                          | Key decisions              |
+|------------|----------------|----------------------------------------|----------------------------|
+| 2026-03-11 | orientation    | Reviewed outline, ran bias check       | Reframed opening argument  |
+| 2026-03-11 | reference-work | Triaged 8 refs, verified 5             | Dropped 2 weak sources     |
+| 2026-03-12 | drafting       | Drafted 3 passages, author approved 2  | Sharpened para 2 language   |
+```
+
+See `templates/section-state.md` for the full template.
 
 ## How It Works
 
